@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+
+
+
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?
+family=IBM+Plex+Sans+Thai:wght@100;200;300;400;500;600;700&
+family=Roboto:ital,wght@0,100..900;1,100..900&
+
+display=swap" rel="stylesheet">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>certest</title>
+
+<style>
+  body {
+    font-family: 'IBM Plex Sans Thai',Arial, sans-serif;
+    padding: 20px;
+    background: linear-gradient(to right, #db70c4, #f6b5ff);
+    
+    
+  }
+
+  #container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    justify-items: center;
+    
+  }
+
+  input, button {
+    padding: 12px;
+    margin: 10px 0;
+    width: 90%;
+    font-size: 16px;
+    border-radius: 10px;
+    font-family: 'IBM Plex Sans Thai','Times New Roman', Times, serif;
+  }
+
+  canvas {
+    width: 100%;        /* ทำให้ย่อ–ขยายตามหน้าจอ */
+    height: auto;
+    margin-top: 20px;
+    border: 1px solid #ccc;
+  }
+
+  #downloadBtn {
+    display: none;
+    background: linear-gradient(to right, #4E2F83, #4F3AC5 ) ;
+    color: #fff;
+    border-radius: 30px;
+    align-items: center;
+    font-family: 'IBM Plex Sans Thai',sans-serif;
+      
+  margin: 10px auto;    /* จัดปุ่มให้อยู่กลางแนวนอน */
+  width: 90%;           /* ถ้าต้องการให้เต็มเหมือนเดิม */
+  }
+  
+  #generateBtn {
+    background: linear-gradient(to right, #4E2F83, #4F3AC5 );
+    color: #fff;
+    border-radius: 30px;
+    align-items: center;
+    font-family: 'IBM Plex Sans Thai',sans-serif;
+    display: block;       /* ทำให้ margin auto ใช้ได้ */
+    margin: 10px auto;    /* จัดปุ่มให้อยู่กลางแนวนอน */
+    width: 90%;           /* ถ้าต้องการให้เต็มเหมือนเดิม */
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 480px) {
+    body { padding: 10px; }
+    #container { padding: 15px; }
+    input, button { font-size: 0.9rem; }
+  } 
+
+  #loadingModal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-box {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,.25);
+  animation: pop .25s ease-out;
+}
+
+.loading-box p {
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #e0e0e0;
+  border-top-color: #351E5D;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 10px auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pop {
+  from { transform: scale(.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+/* ===== Animated background ===== */
+.bg-anim {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bg-anim span {
+  position: absolute;
+  display: block;
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  animation: float 20s linear infinite;
+}
+
+/* กระจายตำแหน่ง */
+.bg-anim span:nth-child(1) {
+  left: 10%;
+  top: 80%;
+  animation-duration: 18s;
+}
+.bg-anim span:nth-child(2) {
+  left: 70%;
+  top: 90%;
+  width: 180px;
+  height: 180px;
+  animation-duration: 25s;
+}
+.bg-anim span:nth-child(3) {
+  left: 40%;
+  top: 100%;
+  width: 90px;
+  height: 90px;
+  animation-duration: 15s;
+}
+.bg-anim span:nth-child(4) {
+  left: 85%;
+  top: 110%;
+  width: 140px;
+  height: 140px;
+  animation-duration: 22s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  100% {
+    transform: translateY(-120vh) translateX(40px);
+    opacity: 0;
+  }
+}
+
+
+</style>
+
+</head>
+<body>
+
+<div id="container">
+  <h2 id="title">กรอกชื่อเพื่อรับเกียรติบัตร</h2>
+
+
+  <input type="text" id="nameInput" placeholder="กรอกชื่อของคุณ">
+
+  <button id="generateBtn" onclick="generateCert()">สร้างเกียรติบัตร</button>
+  
+
+  <!-- Canvas จริง -->
+  <canvas id="certCanvas" width="800" height="600"></canvas>
+
+  <!--ป-->
+  <button id="downloadBtn" onclick="downloadCert()" style="display: none;" > ดาวน์โหลดเกียรติบัตร</button>
+</div>
+
+<script src="script.js"></script>
+
+<!-- Loading Modal -->
+<div id="loadingModal">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <p>กำลังสร้างเกียรติบัตร...</p>
+  </div>
+</div>
+
+
+</body>
+<div class="bg-anim">
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+</html>
